@@ -1,0 +1,401 @@
+---
+whiskers:
+  version: "^2.9.0"
+  filename: "catppuccin.user.css"
+# Rouge (GitLab's server-side highlighter) emits Pygments-compatible token
+# classes. Colors follow catppuccin/python's Pygments theme.
+rouge:
+  overlay2: [c, c1, ch, cm, cpf, cs, p, pm]
+  overlay0: [go]
+  text: [err, g, ge, ges, gh, gi, gp, gr, gs, gt, gu, l, ld, n, nd, ni, nn, no, nv, nx, py, vg, vi, vm, w, x]
+  mauve: [k, kc, kd, kn, kr, ow]
+  sky: [o]
+  pink: [cp, kp, se, sr]
+  red: [bp, gd, nb, ss]
+  yellow: [kt, nc, ne, vc]
+  peach: [il, m, mb, mf, mh, mi, mo]
+  green: [dl, na, s, s1, s2, sa, sb, sc, sd, sh, si, sx]
+  blue: [fm, nf, nt]
+  teal: [nl]
+---
+/* ==UserStyle==
+@name GitLab Catppuccin
+@namespace github.com/jerr3n/gitlab
+@homepageURL https://github.com/jerr3n/gitlab
+@version 2026.11.13
+@updateURL https://github.com/jerr3n/gitlab/raw/main/catppuccin.user.css
+@supportURL https://github.com/jerr3n/gitlab/issues
+@description Soothing pastel theme for GitLab
+@author Catppuccin
+@license MIT
+
+@preprocessor less
+@var select lightFlavor "Light Flavor" ["latte:Latte*", "frappe:Frappé", "macchiato:Macchiato", "mocha:Mocha"]
+@var select darkFlavor "Dark Flavor" ["latte:Latte", "frappe:Frappé", "macchiato:Macchiato", "mocha:Mocha*"]
+@var select accentColor "Accent" ["rosewater:Rosewater", "flamingo:Flamingo", "pink:Pink", "mauve:Mauve*", "red:Red", "maroon:Maroon", "peach:Peach", "yellow:Yellow", "green:Green", "teal:Teal", "blue:Blue", "sapphire:Sapphire", "sky:Sky", "lavender:Lavender", "subtext0:Gray"]
+==/UserStyle== */
+
+/* THIS FILE IS GENERATED FROM gitlab.tera WITH WHISKERS. DO NOT EDIT IT BY HAND. */
+
+/* deno-fmt-ignore */
+@catppuccin: {
+{%- for id, flavor in flavors %}
+  @{{ id }}: { {% for cid, color in flavor.colors %}@{{ cid }}: #{{ color.hex }}; {% endfor %}};
+{%- endfor %}
+};
+
+#lib {
+  .palette() {
+{%- for cid, color in flavors.mocha.colors %}
+    @{{ cid }}: @catppuccin[@@flavor][@{{ cid }}];
+{%- endfor %}
+    @accent: @catppuccin[@@flavor][@@accentColor];
+  }
+
+  .defaults() {
+    color-scheme: if(@flavor = latte, light, dark);
+
+    ::selection {
+      background-color: fade(@accent, 30%);
+    }
+
+    input,
+    textarea {
+      &::placeholder {
+        color: @subtext0 !important;
+      }
+    }
+  }
+
+  .css-variables() {
+{%- for cid, color in flavors.mocha.colors %}
+    --ctp-{{ cid }}: @{{ cid }};
+{%- endfor %}
+  }
+}
+
+@-moz-document regexp("https://gitlab\\.[^/]+/.*") {
+  @import url("https://unpkg.com/@catppuccin/highlightjs@1.0.0/css/catppuccin-variables.important.css");
+
+  /* GitLab toggles `html.gl-dark` itself, including in its "Auto" mode. */
+  :root:not(.gl-dark) {
+    #catppuccin(@lightFlavor, light);
+  }
+  :root.gl-dark {
+    #catppuccin(@darkFlavor, dark);
+  }
+
+  /*
+   * GitLab's colors come from its design tokens: a set of absolute color
+   * scales (`--gl-color-<hue>-<step>`) referenced by semantic tokens
+   * (`--gl-background-color-default`, `--gl-text-color-subtle`, ...).
+   * GitLab's light and dark modes read the scales from opposite ends, so the
+   * scales are remapped by role: in light mode `-0`/`-50` are backgrounds and
+   * `-900`/`-950` are foregrounds, and the other way around in dark mode.
+   */
+  #gitlab {
+    .ramp(@mode, @prefix, @color) {
+      // Background-end to foreground-end order of the 11-step hue scales.
+      @light-steps: 50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950;
+      @dark-steps: 950, 900, 800, 700, 600, 500, 400, 300, 200, 100, 50;
+      @steps: if((@mode = light), @light-steps, @dark-steps);
+      @s1: extract(@steps, 1);
+      @s2: extract(@steps, 2);
+      @s3: extract(@steps, 3);
+      @s4: extract(@steps, 4);
+      @s5: extract(@steps, 5);
+      @s6: extract(@steps, 6);
+      @s7: extract(@steps, 7);
+      @s8: extract(@steps, 8);
+      @s9: extract(@steps, 9);
+      @s10: extract(@steps, 10);
+      @s11: extract(@steps, 11);
+      --@{prefix}-@{s1}: mix(@color, @base, 12%);
+      --@{prefix}-@{s2}: mix(@color, @base, 22%);
+      --@{prefix}-@{s3}: mix(@color, @base, 38%);
+      --@{prefix}-@{s4}: mix(@color, @base, 58%);
+      --@{prefix}-@{s5}: mix(@color, @base, 80%);
+      --@{prefix}-@{s6}: @color;
+      --@{prefix}-@{s7}: @color;
+      --@{prefix}-@{s8}: @color;
+      --@{prefix}-@{s9}: @color;
+      --@{prefix}-@{s10}: mix(@color, @text, 75%);
+      --@{prefix}-@{s11}: mix(@color, @text, 55%);
+    }
+
+    .neutrals(@mode) when (@mode = light) {
+      --gl-color-neutral-0: @base;
+      --gl-color-neutral-10: @mantle;
+      --gl-color-neutral-50: @crust;
+      --gl-color-neutral-100: @surface0;
+      --gl-color-neutral-200: @surface1;
+      --gl-color-neutral-300: @surface2;
+      --gl-color-neutral-400: @overlay0;
+      --gl-color-neutral-500: @overlay1;
+      --gl-color-neutral-600: @subtext0;
+      --gl-color-neutral-700: @subtext1;
+      --gl-color-neutral-800: @text;
+      --gl-color-neutral-900: @text;
+      --gl-color-neutral-950: @text;
+      --gl-color-neutral-1000: @text;
+    }
+    .neutrals(@mode) when (@mode = dark) {
+      --gl-color-neutral-1000: @crust;
+      --gl-color-neutral-950: @base;
+      --gl-color-neutral-900: @mantle;
+      --gl-color-neutral-800: @surface0;
+      --gl-color-neutral-700: @surface1;
+      --gl-color-neutral-600: @surface2;
+      --gl-color-neutral-500: @overlay0;
+      --gl-color-neutral-400: @overlay1;
+      --gl-color-neutral-300: @overlay2;
+      --gl-color-neutral-200: @subtext0;
+      --gl-color-neutral-100: @subtext1;
+      --gl-color-neutral-50: @text;
+      --gl-color-neutral-10: @text;
+      --gl-color-neutral-0: @text;
+    }
+
+    .alphas(@mode) {
+      @shade: if((@mode = light), @text, @crust);
+      @tint: if((@mode = light), @base, @text);
+      each(2 4 6 8 16 24 40, {
+        --gl-color-alpha-dark-@{value}: fade(@shade, percentage((@value / 100)));
+      });
+      each(2 4 6 8 16 24 36 40, {
+        --gl-color-alpha-light-@{value}: fade(@tint, percentage((@value / 100)));
+      });
+      --t-gray-a-02: fade(@shade, 2%);
+      --t-gray-a-04: fade(@shade, 4%);
+      --t-gray-a-06: fade(@shade, 6%);
+      --t-gray-a-08: fade(@shade, 8%);
+      --t-gray-a-16: fade(@shade, 16%);
+      --t-gray-a-24: fade(@shade, 24%);
+      --t-white-a-02: fade(@tint, 2%);
+      --t-white-a-04: fade(@tint, 4%);
+      --t-white-a-06: fade(@tint, 6%);
+      --t-white-a-08: fade(@tint, 8%);
+      --t-white-a-16: fade(@tint, 16%);
+      --t-white-a-24: fade(@tint, 24%);
+      --t-white-a-36: fade(@tint, 36%);
+    }
+
+    .tokens(@mode) {
+      // Palette scales.
+      #gitlab.neutrals(@mode);
+      #gitlab.alphas(@mode);
+      #gitlab.ramp(@mode, gl-color-blue, @blue);
+      #gitlab.ramp(@mode, gl-color-green, @green);
+      #gitlab.ramp(@mode, gl-color-orange, @peach);
+      #gitlab.ramp(@mode, gl-color-red, @red);
+      #gitlab.ramp(@mode, gl-color-purple, @mauve);
+      #gitlab.ramp(@mode, gl-color-data-blue, @blue);
+      #gitlab.ramp(@mode, gl-color-data-aqua, @teal);
+      #gitlab.ramp(@mode, gl-color-data-green, @green);
+      #gitlab.ramp(@mode, gl-color-data-magenta, @pink);
+      #gitlab.ramp(@mode, gl-color-data-orange, @peach);
+      #gitlab.ramp(@mode, data-viz-blue, @blue);
+      #gitlab.ramp(@mode, data-viz-aqua, @teal);
+      #gitlab.ramp(@mode, data-viz-green, @green);
+      #gitlab.ramp(@mode, data-viz-magenta, @pink);
+      #gitlab.ramp(@mode, data-viz-orange, @peach);
+
+      // Accent: links, focus rings, selected controls, primary buttons.
+      @accent-hover: mix(@accent, @text, 85%);
+      @accent-active: mix(@accent, @text, 70%);
+      --gl-text-color-link: @accent;
+      --gl-focus-ring-outer-color: @accent;
+      --highlight-border-color: @accent;
+      --gl-nav-item-selected-indicator-color: @accent;
+      --gl-button-confirm-primary-foreground-color-default: @base;
+      --gl-button-confirm-primary-background-color-default: @accent;
+      --gl-button-confirm-primary-background-color-hover: @accent-hover;
+      --gl-button-confirm-primary-background-color-active: @accent-active;
+      --gl-action-selected-foreground-color-default: @base;
+      --gl-action-selected-background-color-default: @accent;
+      --gl-action-selected-background-color-hover: @accent-hover;
+      --gl-action-selected-background-color-active: @accent-active;
+      --gl-control-background-color-selected-default: @accent;
+      --gl-control-background-color-selected-hover: @accent-hover;
+      --gl-control-indicator-color-selected: @base;
+
+      // Tokens GitLab sets to raw colors instead of scale references.
+      --gl-background-color-overlay: fade(@crust, if((@mode = light), 40%, 64%));
+      --gl-button-default-primary-background-color-default: if((@mode = light), @base, @surface0);
+      --gl-button-default-primary-background-color-hover: if((@mode = light), @mantle, @surface1);
+      --gl-button-default-primary-background-color-active: if((@mode = light), @crust, @surface2);
+      --gl-button-disabled-background-color: fade(@overlay0, 16%);
+      --gl-button-danger-secondary-background-color-default: fade(@red, 20%);
+      --gl-button-danger-secondary-background-color-hover: fade(@red, 32%);
+      --gl-button-danger-secondary-background-color-active: fade(@red, 16%);
+      --gl-action-danger-background-color-default: fade(@red, 0%);
+      --gl-action-danger-background-color-hover: fade(@red, 16%);
+      --gl-action-danger-background-color-active: fade(@red, 24%);
+      --gl-chart-threshold-area-color: fade(@red, 10%);
+      each(red purple blue green orange neutral, {
+        @c: if((@value = red), @red, if((@value = purple), @mauve, if((@value = blue), @blue, if((@value = green), @green, if((@value = orange), @peach, @overlay2)))));
+        --gl-avatar-fallback-background-color-@{value}: fade(@c, 24%);
+      });
+      each(
+        {
+          blue: blue;
+          green: green;
+          indigo: lavender;
+          lightblue: sapphire;
+          lightgreen: teal;
+          lightindigo: mauve;
+          lightred: maroon;
+          red: red;
+        },
+        {
+          @c: @@value;
+          --gl-broadcast-banner-background-color-@{key}: @c;
+          --gl-broadcast-banner-border-color-@{key}: @c;
+          --gl-broadcast-banner-text-color-@{key}: @base;
+          --gl-broadcast-banner-icon-color-@{key}: @base;
+        }
+      );
+
+      // Illustrations (empty states).
+      --gl-illustration-stroke-color-default: @text;
+      --gl-illustration-fill-color-default: if((@mode = light), @base, @surface1);
+      --gl-illustration-base-fill-color: @surface0;
+      --gl-illustration-accent-fill-color-strong: @lavender;
+      --gl-illustration-accent-stroke-color-strong: @lavender;
+      --gl-illustration-accent-fill-color-subtle: mix(@lavender, @base, 40%);
+      --gl-illustration-accent-fill-color-teal: @teal;
+      --gl-illustration-accent-stroke-color-teal: @teal;
+      --gl-illustration-accent-fill-color-orange: @peach;
+      --gl-illustration-accent-stroke-color-orange: @peach;
+      --gl-illustration-status-fill-color-danger: @red;
+      --gl-illustration-status-fill-color-neutral: @lavender;
+      --gl-illustration-status-fill-color-success: @green;
+      --gl-illustration-status-fill-color-warning: @yellow;
+      --gl-illustration-isometric-stroke-color-default: @text;
+      --gl-illustration-isometric-base-top-fill-color: @surface0;
+      --gl-illustration-isometric-base-front-fill-color: @surface1;
+      --gl-illustration-isometric-base-side-fill-color: @surface2;
+      --gl-illustration-isometric-accent-top-fill-color: @overlay0;
+      --gl-illustration-isometric-accent-front-fill-color: @overlay1;
+      --gl-illustration-isometric-accent-side-fill-color: @overlay2;
+      --gl-illustration-isometric-glyph-top-fill-color: mix(@teal, @base, 40%);
+      --gl-illustration-isometric-glyph-front-fill-color: @base;
+      --gl-illustration-isometric-glyph-side-fill-color: @teal;
+      --gl-illustration-isometric-glyph-shadow-fill-color: @mantle;
+      --gl-illustration-isometric-object-top-fill-color: @peach;
+      --gl-illustration-isometric-object-front-fill-color: mix(@peach, @base, 50%);
+      --gl-illustration-isometric-object-side-fill-color: mix(@peach, @text, 80%);
+      --gl-illustration-isometric-object-shadow-fill-color: @maroon;
+      --gl-illustration-isometric-object-highlight-fill-color: @base;
+
+      // Notes and diffs.
+      --diff-warning-background-color: mix(@yellow, @base, 15%);
+      --timeline-entry-draft-note-background-color: mix(@yellow, @base, 15%);
+      --timeline-entry-internal-note-background-color: mix(@yellow, @base, 15%);
+      --timeline-entry-target-background-color: mix(@accent, @base, 15%);
+
+      // Legacy Bootstrap variables.
+      --white: if((@mode = light), @base, @mantle);
+      --black: @text;
+      --gray-10: if((@mode = light), @mantle, @base);
+      --blue: @blue;
+      --blue-950: mix(@blue, @base, 12%);
+      --indigo: @lavender;
+      --purple: @mauve;
+      --pink: @pink;
+      --red: @red;
+      --red-950: mix(@red, @base, 12%);
+      --orange: @peach;
+      --orange-950: mix(@peach, @base, 12%);
+      --yellow: @yellow;
+      --green: @green;
+      --green-950: mix(@green, @base, 12%);
+      --teal: @teal;
+      --cyan: @sky;
+      --gray: @overlay1;
+      --gray-dark: if((@mode = light), @text, @subtext1);
+      --primary: @accent;
+      --secondary: if((@mode = light), @crust, @mantle);
+      --success: @green;
+      --info: @blue;
+      --warning: @peach;
+      --danger: @red;
+      --light: @surface0;
+      --dark: if((@mode = light), @text, @subtext1);
+    }
+
+    /* Variables read by the syntax highlighting themes (`.code.white`, `.code.dark`, ...). */
+    .code-tokens() {
+      @add: mix(@green, @base, 15%);
+      @add-strong: mix(@green, @base, 30%);
+      @del: mix(@red, @base, 15%);
+      @del-strong: mix(@red, @base, 30%);
+
+      --code-background: @base;
+      --code-text-color: @text;
+      --code-border-color: @surface0;
+      --code-changed-border-color: @surface1;
+      --code-empty-background: @mantle;
+      --code-line-number-background-color: @base;
+      --code-line-number-color: @overlay1;
+      --code-line-number-hover-background-color: mix(@accent, @base, 25%);
+      --code-line-number-hover-border-color: @accent;
+      --code-line-number-hover-color: @text;
+      --code-highlighted-line-background-color: mix(@accent, @base, 15%);
+      --code-highlighted-line-border-color: @accent;
+      --code-meta-diff-background-color: @mantle;
+      --code-meta-diff-color: @subtext0;
+      --code-diff-hunk-header-background-color: mix(@blue, @base, 12%);
+      --code-diff-hunk-header-color: @subtext0;
+      --code-diff-expand-button-background-color: @surface0;
+      --code-diff-expand-button-color: @subtext0;
+      --code-diff-expand-button-hover-background-color: @surface1;
+      --code-diff-expand-button-hover-color: @text;
+      --diff-expansion-background-color: @surface0;
+
+      --code-new-diff-background-color: @add;
+      --code-new-diff-line-number-background-color: @add-strong;
+      --code-new-inline-diff-background-color: @add-strong;
+      --code-new-diff-color: @subtext0;
+      --code-new-diff-line-number-color: @subtext0;
+      --code-new-diff-sign-color: @green;
+      --code-new-diff-border-color: @overlay0;
+      --code-old-diff-background-color: @del;
+      --code-old-diff-line-number-background-color: @del-strong;
+      --code-old-inline-diff-background-color: @del-strong;
+      --code-old-diff-color: @subtext0;
+      --code-old-diff-line-number-color: @subtext0;
+      --code-old-diff-sign-color: @red;
+      --code-old-diff-border-color: @overlay0;
+      --diff-addition-color: @add-strong;
+      --diff-deletion-color: @del-strong;
+      --default-diff-color-addition: @green;
+      --default-diff-color-deletion: @red;
+    }
+  }
+
+  #catppuccin(@flavor, @mode) {
+    #lib.palette();
+    #lib.defaults();
+    #lib.css-variables();
+    #gitlab.tokens(@mode) !important;
+
+    accent-color: @accent;
+
+    .code,
+    .code-syntax-highlight-theme {
+      #gitlab.code-tokens() !important;
+
+      // Rouge (blobs, diffs, Markdown code blocks).
+{%- for color, classes in rouge %}
+      {% for class in classes %}.{{ class }}{% if not loop.last %},
+      {% endif %}{% endfor %} {
+        color: @{{ color }};
+      }
+{%- endfor %}
+      .hll {
+        background-color: @surface0;
+      }
+    }
+  }
+}
